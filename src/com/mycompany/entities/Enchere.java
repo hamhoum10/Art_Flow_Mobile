@@ -119,17 +119,12 @@ public class Enchere {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //    }
 
-   @Override
-public String toString() {
-    return "Enchere{\n" 
-        + "titre=" + titre + "\n" 
-        + "description=" + description + "\n" 
-        + "prixdepart=" + prixdepart + "\n" 
-        + "date_limite=" + date_limite + "\n" 
-        + "img=" + img + "\n"
-        + "}";
-}
+    @Override
+    public String toString() {
+        return "Enchere{" + "ide=" + ide + ", titre=" + titre + ", description=" + description + ", prixdepart=" + prixdepart + ", date_limite=" + date_limite + ", img=" + img + '}';
+    }
 
+  
     
     
     

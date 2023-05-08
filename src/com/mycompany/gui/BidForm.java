@@ -9,6 +9,7 @@ package com.mycompany.gui;
 import com.codename1.components.MultiButton;
 import com.codename1.components.SpanLabel;
 import com.codename1.io.ConnectionRequest;
+import com.codename1.io.FileSystemStorage;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
@@ -18,27 +19,34 @@ import com.codename1.ui.Command;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.Display;
-import com.codename1.ui.FontImage;
+
 import com.codename1.ui.Form;
-import com.codename1.ui.Label;
+
 import com.codename1.ui.TextField;
-import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BorderLayout;
+
 import com.codename1.ui.layouts.BoxLayout;
-import com.codename1.ui.list.GenericListCellRenderer;
-import com.codename1.ui.util.Resources;
+
+import com.itextpdf.text.BaseColor;
 import com.mycompany.entities.Client;
 import com.mycompany.entities.Enchere;
 import com.mycompany.services.EnchereServices;
-import com.mycompany.utils.Statics;
-import java.util.ArrayList;
+
 import com.mycompany.entities.Enchere;
 import com.mycompany.entities.Participant;
 //import com.codename1.io.FileSystemStorage;
 import com.itextpdf.text.Document;
+
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.*;
+import java.util.Calendar;
+
 
 
 
@@ -87,7 +95,7 @@ container.add(montantField);
 
    
 
-
+   java.util.Date today = new java.util.Date();
     // Create a text field for the client id
     TextField clienid = new TextField("", "Enter client id");
     container.add(clienid);
@@ -96,50 +104,75 @@ container.add(montantField);
     Button submitButton = new Button("Submit");
     container.add(submitButton);
     
-    Button downloadButton = new Button("Download PDF");
-    container.add(downloadButton);
     
-    
+Button downloadButton = new Button("Download PDF");
+
+
+// Set the date to compare with
+Calendar targetDate = Calendar.getInstance();
+targetDate.set(Calendar.YEAR, 2023);
+targetDate.set(Calendar.MONTH, Calendar.MAY);
+targetDate.set(Calendar.DAY_OF_MONTH, 8);
+
+// Compare the current date with the target date
+Calendar currentDate = Calendar.getInstance();
+if (currentDate.after(targetDate)) {
+    downloadButton.setHidden(true);
+    container.addComponent(downloadButton);
+    container.revalidate();
+} else {
+    container.addComponent(downloadButton);
+}
+
     // Add an ActionListener to the submit button
     submitButton.addActionListener(evt -> {
         // Get the selected Enchere object from the combo box
        //enchere = enchereList.get((int) titleComboBox.getSelectedItem());
          Enchere enchere = new Enchere();
 enchere.setIde(Integer.parseInt(enchereid.getText()));
+        System.out.println("ENCHERE ID : "+enchere.getIde());
         
 Client client = new Client();
 client.setId(Integer.parseInt(clienid.getText()));
+System.out.println("Client ID : "+client.getId());
 
 
 
 
 
 double montant = Double.parseDouble(montantField.getText());
+
     if (montant <= 0) {
         Dialog.show("Error", "Bid amount must be positive", "OK", null);
+       
         return;
     }
 
 Participant p = new Participant (montant,client, enchere);
-boolean success = es.ajoutParticipant(p);
-        
+
+        System.out.println(p);
         // Show a success message or an error message if the operation failed
-        if (success) {
+        if (es.ajoutParticipant(p)) {
+           
             Dialog.show("Success", "Participant added to Enchere", "OK", null);
+           
         } else {
-            Dialog.show("Error", "Failed to add participant", "OK", null);
+            Dialog.show("Error", "The bid must higher than the current highest bid", "OK", null);
         }
-        
+         new BidForm().show();
         
     });
     
-//    downloadButton.addActionListener(evt -> {
-//    if (FileSystemStorage.getInstance().exists(pdfFilePath)) {
-//        Display.getInstance().execute(pdfFilePath);
-//    } else {
-//        Dialog.show("Error", "PDF file not found", "OK", null);
-//    }
-//});
+    downloadButton.addActionListener(evt -> {
+   
+    try {
+        downloadPDF(en.getTitre(),"jhjhjhjh","jjhjjkhjhkjhjk","jhjhjhjhj","jhjhjhjhj");
+    } catch (Exception ex) {
+       
+    }
+        
+        
+});
 
 
 
@@ -181,7 +214,72 @@ boolean success = es.ajoutParticipant(p);
     
     
     
+   private void downloadPDF(String titre,String desc,String nickname,String type,String loc) throws Exception {
+    // Set the file path
+    String filePath = FileSystemStorage.getInstance().getAppHomePath() + "offre.pdf";
+    // Create an output stream to write the PDF file
+    OutputStream outputStream = FileSystemStorage.getInstance().openOutputStream(filePath);
+
+    // Create a new document
+    Document document = new Document();
+    // Set the PDF writer to write to the output stream
+    PdfWriter.getInstance(document, outputStream);
+
+    // Add metadata to the document
+    document.addAuthor("Your Name");
+    document.addCreator("Artounsi");
+    document.addSubject("Fichier de demande d'emplois");
+    document.addTitle("Fichier de demande d'emplois");
+
+    // Set the document margins
+    document.setMargins(36, 36, 36, 36);
+
+    // Open the document
+    document.open();
+
     
+Paragraph nickparagraph = new Paragraph("Vou avez postuler a l'offre de la societé : " + nickname,
+        FontFactory.getFont(FontFactory.TIMES_BOLD, 18, Font.NORMAL));
+nickparagraph.setAlignment(Element.ALIGN_CENTER);
+
+// Create a new cell to hold the paragraph
+PdfPCell cell = new PdfPCell(nickparagraph);
+
+// Set the background color of the cell
+cell.setBackgroundColor(new BaseColor(153, 50, 204)); // Violet color
+
+// Add the cell to a new table with one column and one row
+PdfPTable table = new PdfPTable(1);
+table.setWidthPercentage(100);
+
+table.addCell(cell);
+
+// Add the table to the document
+document.add(table);
+
+      
+    
+    
+      
+        // Set the font size and style for the response
+      
+
+        // Add some space between the questions
+        document.add(new Paragraph(" "));
+    
+
+    // Close the document
+    document.close();
+
+    // Flush and close the output stream
+    outputStream.flush();
+    outputStream.close();
+
+    if (Dialog.show("PDF Downloaded", "PDF file was saved to " + filePath + ". Do you want to open it?", "Open", "Cancel")) {
+        // Open the PDF file
+        Display.getInstance().execute(filePath);
+    }
+}  
     
     
     

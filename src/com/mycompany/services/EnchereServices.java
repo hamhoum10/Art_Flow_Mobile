@@ -102,50 +102,48 @@ public class EnchereServices {
 
 
     public ArrayList<Enchere> getAllEnchere() {
+        req = new ConnectionRequest();
         ArrayList<Enchere> encheres = new ArrayList<>();
         String url = Statics.BASE_URL + "/affichage";
         req.setUrl(url);
-        req.addResponseListener(new ActionListener<NetworkEvent>() {
-            @Override
-            public void actionPerformed(NetworkEvent evt) {
-
-                try {
-                    JSONParser j = new JSONParser();
-                    Map<String, Object> tasksListJson = j.parseJSON(new CharArrayReader(new String(req.getResponseData()).toCharArray()));
-
-                    List<Map<String, Object>> list = (List<Map<String, Object>>) tasksListJson.get("root");
-                    System.out.println("Response JSON: " + list); // Debug output
+        req.addResponseListener((NetworkEvent evt) -> {
+            try {
+                JSONParser j = new JSONParser();
+                Map<String, Object> tasksListJson = j.parseJSON(new CharArrayReader(new String(req.getResponseData()).toCharArray()));
+                
+                List<Map<String, Object>> list = (List<Map<String, Object>>) tasksListJson.get("root");
+                System.out.println("Response JSON: " + list); // Debug output
 // Debug output
-                    for (Map<String, Object> obj : list) {
-                        Enchere e = new Enchere();
+System.out.println("Response JSON: " + new String(req.getResponseData()));
 
-                     
-                    e.setTitre(obj.get("titre").toString());
-                        e.setDescription(obj.get("description").toString());
-                        e.setPrixdepart(Float.valueOf(obj.get("prixdepart").toString()));
-
+for (Map<String, Object> obj : list) {
+    Enchere e = new Enchere();
+    
+    
+    e.setTitre(obj.get("titre").toString());
+    e.setDescription(obj.get("description").toString());
+    e.setPrixdepart(Float.valueOf(obj.get("prixdepart").toString()));
+    
 // Parse dateajout
 // Parse dateajout
-                        String dateLimiteStr = obj.get("dateLimite").toString();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                        Date dateLimite = dateFormat.parse(dateLimiteStr);
-                        e.setDate_limite(dateLimite);
+String dateLimiteStr = obj.get("dateLimite").toString();
+SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+Date dateLimite = dateFormat.parse(dateLimiteStr);
+e.setDate_limite(dateLimite);
 
-                        Object imgObj = obj.get("image");
-                        if (imgObj != null) {
-                            e.setImg(imgObj.toString());
-                        }
-                        System.out.println("Enchere object: " + e); // Debug output
-                        encheres.add(e);
+Object imgObj = obj.get("image");
+if (imgObj != null) {
+    e.setImg(imgObj.toString());
+}
+System.out.println("Enchere object: " + e); // Debug output
+encheres.add(e);
 
-                    }
-                    // Move the return statement inside the actionPerformed method
-                } catch (ParseException ex) {
-                    System.out.println("hhh");
-                } catch (IOException ex) {
-                    // Logger.getLogger(EnchereServices.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
+}
+// Move the return statement inside the actionPerformed method
+            } catch (ParseException ex) {
+                System.out.println("hhh");
+            } catch (IOException ex) {
+                // Logger.getLogger(EnchereServices.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -161,7 +159,9 @@ public class EnchereServices {
     
      //AJOUT 
     public boolean ajoutParticipant(Participant p) {
-
+        boolean etat=false;
+        
+req = new ConnectionRequest();
         String url = Statics.BASE_URL + "/addparticipant/new";
         req.setUrl(url);
 
@@ -170,6 +170,7 @@ public class EnchereServices {
         
           req.addArgument("montant",p.getMontant()+ "");
             req.addArgument("id",p.getClient().getId()+ "");
+             
                 req.addArgument("ide",p.getEnchere().getIde()+ "");
                
          
@@ -177,12 +178,19 @@ public class EnchereServices {
         req.addResponseListener(new ActionListener<NetworkEvent>() {
             @Override
             public void actionPerformed(NetworkEvent evt) {
-                resultOK = req.getResponseCode() == 200;
-                req.removeResponseListener(this);
-            }
+               resultOK = false;
+if(req.getResponseCode() == 200) {
+    String response = new String(req.getResponseData());
+    if(response.contains("The bid must be at least")) {
+        resultOK = false;
+    } else {
+        resultOK = true;
+    }
+}}
+
         });
 
-        //   NetworkManager.getInstance().addToQueueAndWait(req);
+         NetworkManager.getInstance().addToQueueAndWait(req);
 
         return resultOK;
     }
