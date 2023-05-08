@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component type="Form" layout="LayeredLayout" layeredLayoutPreferredWidthMM="0.0" layeredLayoutPreferredHeightMM="0.0"  autolayout="true" title="livraison" scrollableY="true" name="livraison">
+  <component type="Container" layout="BoxLayout" boxLayoutAxis="Y"  preferredSize="59.271805mm 65.83404mm" name="Box_Layout_Y">
+    <layoutConstraint insets="13.982522% auto auto 33.192047%" referenceComponents="-1 -1 -1 -1" referencePositions="0.0 0.0 0.0 0.0" />
+    <component type="Label" text="Search" name="Label">
+    </component>
+    <component type="TextField" name="TextField">
+    </component>
+    <component type="TextField" preferredSize="inherit inherit" name="TextField_2">
+    </component>
+    <component type="TextField" preferredSize="76.206604mm 5.7154956mm" name="TextField_3">
+    </component>
+    <component type="Button" text="Submit" name="Button">
+    </component>
+  </component>
+</component>
