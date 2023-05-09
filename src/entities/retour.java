@@ -13,13 +13,13 @@ import java.util.Date;
  */
 public class retour {
      private int id;
-    private Date date_retour;
+    private String date_retour;
 
-    public Date getDate_sort() {
+    public String getDate_sort() {
         return date_retour;
     }
 
-    public void setDate_entr(Date date_sort) {
+    public void setDate_entr(String date_sort) {
         this.date_retour = date_sort;
     }
 
@@ -59,8 +59,17 @@ public class retour {
     //constructeure
     public retour(){}
 
-    public retour(int id, String name, String artiste, String addres , Date date_retour, int id_commende, String user_name) {
+    public retour(int id, String name, String artiste, String addres , String date_retour, int id_commende, String user_name) {
         this.id = id;
+        this.name = name;
+        this.artiste = artiste;
+        this.id_commende = id_commende;
+        this.addres=addres;
+        this.date_retour=date_retour;
+        this.user_name=user_name;
+    }
+     public retour( String name, String artiste, String addres , String date_retour, int id_commende, String user_name) {
+        
         this.name = name;
         this.artiste = artiste;
         this.id_commende = id_commende;
@@ -82,11 +91,11 @@ public class retour {
         return name;
     }
 
-    public void setDate_retour(Date date_retour) {
+    public void setDate_retour(String date_retour) {
         this.date_retour = date_retour;
     }
 
-    public Date getDate_retour() {
+    public String getDate_retour() {
         return date_retour;
     }
 

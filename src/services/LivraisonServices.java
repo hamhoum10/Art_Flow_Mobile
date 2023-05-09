@@ -39,7 +39,7 @@ public class LivraisonServices {
     boolean resultOK = false;
     List<livraison> tasks = new ArrayList<>();
 //Constructor
-    private LivraisonServices() {
+    public LivraisonServices() {
         req = new ConnectionRequest();
     }
 
@@ -128,7 +128,7 @@ public class LivraisonServices {
                  a.setId(((Double ) item.get("id")).intValue());
                 a.setAddres((String)item.get("addres"));
                 a.setArtiste((String)item.get("artiste"));
-//                a.setId_commende(((Double )item.get("idcom")).intValue());
+//                 a.setId_commende(((Double )item.get("idcom")).intValue());
                 a.setId_commende(14);
                 a.setDate_entr((String)item.get("date_sort"));
                 a.setName((String)item.get("name_produit"));

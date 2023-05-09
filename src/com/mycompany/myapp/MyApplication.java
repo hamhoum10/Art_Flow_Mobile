@@ -1,6 +1,8 @@
 package com.mycompany.myapp;
 
 
+import com.codename1.charts.models.XYMultipleSeriesDataset;
+import com.codename1.demos.charts.BudgetPieChart;
 import static com.codename1.ui.CN.*;
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
@@ -13,13 +15,19 @@ import com.codename1.ui.Toolbar;
 import java.io.IOException;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.io.NetworkEvent;
-import entities.guiStock.AddStockForm;
-import entities.guiStock.ShowStockForm;
+import gui.Stock.AddStockForm;
+import gui.Stock.ShowStockForm;
 import entities.livraison;
 import gui.livraiosn.AddLivraisonForm;
 import gui.LoginForm;
 import gui.livraiosn.ShowLivraisonForm;
 import gui.livraiosn.modifyLivraisonForm;
+import gui.retour.AddRetourForm;
+import gui.retour.ShowRetourForm;
+import gui.retour.stat;
+
+import java.util.ArrayList;
+import java.util.List;
 import services.LivraisonServices;
 
 /**
@@ -67,9 +75,14 @@ public class MyApplication {
 //      Form a = new modifyLivraisonForm(b, theme);
 //LivraisonServices as = LivraisonServices.getInstance();
         //System.out.println(as.SMSlivraison());
-         Form a = new ShowLivraisonForm(theme);
+//          new ShowRetourForm(theme).show();
+stat s = new stat();
+          Form pieChartForm = s.createPieChartForm();
+            pieChartForm.show();
+          
+           
  
-        a.show();
+        
     }
 
     public void stop() {

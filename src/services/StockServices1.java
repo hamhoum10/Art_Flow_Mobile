@@ -11,7 +11,7 @@ import com.codename1.io.JSONParser;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.events.ActionListener;
-import entities.livraison;
+
 import entities.stock;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class StockServices1 {
     boolean resultOK = false;
     List<stock> tasks = new ArrayList<>();
 //Constructor
-    private StockServices1() {
+    public StockServices1() {
         req = new ConnectionRequest();
     }
 
