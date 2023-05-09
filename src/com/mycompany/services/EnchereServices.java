@@ -25,11 +25,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  *
  * @author howell
  */
 public class EnchereServices {
+
+    List<Enchere> encheress = new ArrayList<>();
 
     public static boolean resultOK = true;
     private ConnectionRequest req;
@@ -100,7 +103,6 @@ public class EnchereServices {
         return resultOK;
     }
 
-
     public ArrayList<Enchere> getAllEnchere() {
         req = new ConnectionRequest();
         ArrayList<Enchere> encheres = new ArrayList<>();
@@ -110,35 +112,34 @@ public class EnchereServices {
             try {
                 JSONParser j = new JSONParser();
                 Map<String, Object> tasksListJson = j.parseJSON(new CharArrayReader(new String(req.getResponseData()).toCharArray()));
-                
+
                 List<Map<String, Object>> list = (List<Map<String, Object>>) tasksListJson.get("root");
                 System.out.println("Response JSON: " + list); // Debug output
 // Debug output
-System.out.println("Response JSON: " + new String(req.getResponseData()));
+                System.out.println("Response JSON: " + new String(req.getResponseData()));
 
-for (Map<String, Object> obj : list) {
-    Enchere e = new Enchere();
-    
-    
-    e.setTitre(obj.get("titre").toString());
-    e.setDescription(obj.get("description").toString());
-    e.setPrixdepart(Float.valueOf(obj.get("prixdepart").toString()));
-    
+                for (Map<String, Object> obj : list) {
+                    Enchere e = new Enchere();
+
+                    e.setTitre(obj.get("titre").toString());
+                    e.setDescription(obj.get("description").toString());
+                    e.setPrixdepart(Float.valueOf(obj.get("prixdepart").toString()));
+
 // Parse dateajout
 // Parse dateajout
-String dateLimiteStr = obj.get("dateLimite").toString();
-SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-Date dateLimite = dateFormat.parse(dateLimiteStr);
-e.setDate_limite(dateLimite);
+                    String dateLimiteStr = obj.get("dateLimite").toString();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    Date dateLimite = dateFormat.parse(dateLimiteStr);
+                    e.setDate_limite(dateLimite);
 
-Object imgObj = obj.get("image");
-if (imgObj != null) {
-    e.setImg(imgObj.toString());
-}
-System.out.println("Enchere object: " + e); // Debug output
-encheres.add(e);
+                    Object imgObj = obj.get("image");
+                    if (imgObj != null) {
+                        e.setImg(imgObj.toString());
+                    }
+                    System.out.println("Enchere object: " + e); // Debug output
+                    encheres.add(e);
 
-}
+                }
 // Move the return statement inside the actionPerformed method
             } catch (ParseException ex) {
                 System.out.println("hhh");
@@ -147,75 +148,61 @@ encheres.add(e);
             }
         });
 
-      NetworkManager.getInstance().addToQueueAndWait(req);
+        NetworkManager.getInstance().addToQueueAndWait(req);
         // Return an empty list here (will be ignored)
         return encheres;
     }
 
-    
-    
-    
-    
-    
-     //AJOUT 
+    //AJOUT 
     public boolean ajoutParticipant(Participant p) {
-        boolean etat=false;
-        
-req = new ConnectionRequest();
+        boolean etat = false;
+
+        req = new ConnectionRequest();
         String url = Statics.BASE_URL + "/addparticipant/new";
         req.setUrl(url);
 
         req.setPost(false);
-        
-        
-          req.addArgument("montant",p.getMontant()+ "");
-            req.addArgument("id",p.getClient().getId()+ "");
-             
-                req.addArgument("ide",p.getEnchere().getIde()+ "");
-               
-         
-          //5
+
+        req.addArgument("montant", p.getMontant() + "");
+        req.addArgument("id", p.getClient().getId() + "");
+
+        req.addArgument("ide", p.getEnchere().getIde() + "");
+
+        //5
         req.addResponseListener(new ActionListener<NetworkEvent>() {
             @Override
             public void actionPerformed(NetworkEvent evt) {
-               resultOK = false;
-if(req.getResponseCode() == 200) {
-    String response = new String(req.getResponseData());
-    if(response.contains("The bid must be at least")) {
-        resultOK = false;
-    } else {
-        resultOK = true;
-    }
-}}
+                resultOK = false;
+                if (req.getResponseCode() == 200) {
+                    String response = new String(req.getResponseData());
+                    if (response.contains("The bid must be at least")) {
+                        resultOK = false;
+                    } else {
+                        resultOK = true;
+                    }
+                }
+            }
 
         });
 
-         NetworkManager.getInstance().addToQueueAndWait(req);
+        NetworkManager.getInstance().addToQueueAndWait(req);
 
         return resultOK;
     }
-        
-        
-        
-        
-      
-    
-    
-    
-    
-    public Client DetailClient( int id , Client client) {
-        
-        String url = Statics.BASE_URL+"/clientById?"+id;
+
+    public Client DetailClient(int id, Client client) {
+
+        String url = Statics.BASE_URL + "/clientById?" + id;
         req.setUrl(url);
-        
-        String str  = new String(req.getResponseData());
+
+        String str = new String(req.getResponseData());
         req.addResponseListener(((evt) -> {
-        
+
             JSONParser jsonp = new JSONParser();
             try {
-                
-                Map<String,Object>obj = jsonp.parseJSON(new CharArrayReader(new String(str).toCharArray()));
-                
+
+                Map<String, Object> obj = jsonp.parseJSON(new CharArrayReader(new String(str).toCharArray()));
+
                 client.setFirstname(obj.get("firstname").toString());
                 client.setLastname(obj.get("lastname").toString());
                 client.setAddress(obj.get("address").toString());
@@ -224,28 +211,200 @@ if(req.getResponseCode() == 200) {
                 client.setUsername(obj.get("username").toString());
                 client.setPwd(obj.get("password").toString());
 
-                
-            }catch(IOException ex) {
-                System.out.println("error related to sql 🙁 "+ex.getMessage());
+            } catch (IOException ex) {
+                System.out.println("error related to sql 🙁 " + ex.getMessage());
             }
-            
-            
-            System.out.println("data === "+str);
-            
-            
-            
+
+            System.out.println("data === " + str);
+
         }));
-        
-              NetworkManager.getInstance().addToQueueAndWait(req);//execution ta3 request sinon yet3ada chy dima nal9awha
 
-              return client;
+        NetworkManager.getInstance().addToQueueAndWait(req);//execution ta3 request sinon yet3ada chy dima nal9awha
+
+        return client;
     }
-    
-    
-    
-    
-    
-    
-    
-}
 
+    //FETCH
+    public List<Enchere> fetchEnchere() {
+
+        req = new ConnectionRequest();
+
+        //1
+        String fetchURL = Statics.BASE_URL + "/affichage";
+
+        //2
+        req.setUrl(fetchURL);
+
+        //3
+        req.setPost(false);
+
+        //4
+        req.addResponseListener(new ActionListener<NetworkEvent>() {
+            @Override
+            public void actionPerformed(NetworkEvent evt) {
+                try {
+                    encheress = parseEnchere(new String(req.getResponseData()));
+                } catch (ParseException ex) {
+                    System.out.println("hhh");
+                }
+                req.removeResponseListener(this);
+            }
+
+        });
+        //parse
+
+        NetworkManager.getInstance().addToQueueAndWait(req);
+        return encheress;
+    }
+
+    public List<Enchere> parseEnchere(String jsonText) throws ParseException {
+//
+//        //var
+        encheress = new ArrayList<>();
+//
+//        //DO
+//        //1
+        JSONParser j = new JSONParser();
+
+        try {
+
+            Map<String, Object> tasksListJson = j.parseJSON(new CharArrayReader(jsonText.toCharArray()));
+
+            List<Map<String, Object>> list = (List<Map<String, Object>>) tasksListJson.get("root");
+            for (Map<String, Object> obj : list) {
+                Enchere en = new Enchere();
+
+                en.setIde(((Number) obj.get("ide")).intValue());
+                en.setTitre((String) obj.get("titre"));
+                en.setDescription((String) obj.get("description"));
+                en.setPrixdepart((double) obj.get("prixdepart"));
+                String dateStr = obj.get("date_limite").toString();
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                Date date_limite = dateFormat.parse(dateStr);
+                en.setDate_limite(date_limite);
+                en.setImg((String) obj.get("image"));
+
+                encheress.add(en);
+
+            }
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return encheress;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /*   public Enchere getONEEnchere(int ide) {
+          Enchere e = new Enchere();
+        req = new ConnectionRequest();
+        Enchere encheres = new();
+        String url = Statics.BASE_URL + "/encheres/"+ ide ;
+        req.setUrl(url);
+        req.addResponseListener((NetworkEvent evt) -> {
+            try {
+                JSONParser j = new JSONParser();
+                Map<String, Object> tasksListJson = j.parseJSON(new CharArrayReader(new String(req.getResponseData()).toCharArray()));
+
+                List<Map<String, Object>> list = (List<Map<String, Object>>) tasksListJson.get("root");
+                System.out.println("Response JSON: " + list); // Debug output
+// Debug output
+                System.out.println("Response JSON: " + new String(req.getResponseData()));
+
+                for (Map<String, Object> obj : list) {
+                   
+
+                    e.setTitre(obj.get("titre").toString());
+                    e.setDescription(obj.get("description").toString());
+                    e.setPrixdepart(Float.valueOf(obj.get("prixdepart").toString()));
+                    
+
+// Parse dateajout
+// Parse dateajout
+                    String dateLimiteStr = obj.get("dateLimite").toString();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    Date dateLimite = dateFormat.parse(dateLimiteStr);
+                    e.setDate_limite(dateLimite);
+
+                    Object imgObj = obj.get("image");
+                    if (imgObj != null) {
+                        e.setImg(imgObj.toString());
+                    }
+                    System.out.println("Enchere object: " + e); // Debug output
+                    encheres.add(e);
+
+                }
+// Move the return statement inside the actionPerformed method
+            } catch (ParseException ex) {
+                System.out.println("hhh");
+            } catch (IOException ex) {
+                // Logger.getLogger(EnchereServices.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        NetworkManager.getInstance().addToQueueAndWait(req);
+        // Return an empty list here (will be ignored)
+        return e;
+    }*/
+
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     public Enchere getONEEnchere1(int ide) {
+        final Enchere en = new Enchere();
+         req = new ConnectionRequest();
+         JSONParser jp = new JSONParser();
+         String url = Statics.BASE_URL + "/encheres/"+ ide ;
+         req.setUrl(url);
+        req.setPost(false);
+         
+         req.addResponseListener(new ActionListener<NetworkEvent>() {
+            @Override
+            public void actionPerformed(NetworkEvent evt) {
+                String jsonText = new String(req.getResponseData());
+                try {
+                Map<String, Object> obj = jp.parseJSON(new CharArrayReader(jsonText.toCharArray()));
+                en.setIde(ide);
+                en.setTitre((String) obj.get("titre"));
+                en.setDescription((String) obj.get("description"));
+                en.setPrixdepart((double) obj.get("prixdepart"));
+                String dateStr = obj.get("dateLimite").toString();
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                Date date_limite = dateFormat.parse(dateStr);
+                en.setDate_limite(date_limite);
+                en.setImg((String) obj.get("image"));
+                    
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ParseException ex) {
+                    
+                }
+            }
+        });
+
+        NetworkManager.getInstance().addToQueueAndWait(req);
+
+         
+         
+         
+         
+         return en;
+     }
+     
+     
+    
+     
+     
+     
+     
+     
+     
+     
+     
+}

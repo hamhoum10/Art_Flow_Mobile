@@ -21,6 +21,7 @@ import com.mycompany.entities.Enchere;
 import com.mycompany.gui.BidForm;
 import com.mycompany.gui.ShowEnchereForm;
 import com.mycompany.gui.ajoutEnchereForm;
+import com.mycompany.services.EnchereServices;
 
 
 /**
@@ -57,13 +58,16 @@ public class MyApplication {
     
     public void start() {
         if(current != null){
+            
             current.show();
             return;
         }
       
     
-   
-        
+//   EnchereServices es = new EnchereServices();
+//            System.out.println("*************************");
+//            System.out.println(es.getONEEnchere(40));
+//        System.out.println("*************************");
 //new BidForm(theme).show();
   new ShowEnchereForm().show();
 //new ajoutEnchereForm(theme).show();

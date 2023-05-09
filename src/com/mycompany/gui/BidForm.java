@@ -116,7 +116,7 @@ targetDate.set(Calendar.DAY_OF_MONTH, 8);
 
 // Compare the current date with the target date
 Calendar currentDate = Calendar.getInstance();
-if (currentDate.after(targetDate)) {
+if (currentDate.before(targetDate)) {
     downloadButton.setHidden(true);
     container.addComponent(downloadButton);
     container.revalidate();
@@ -166,7 +166,9 @@ Participant p = new Participant (montant,client, enchere);
     downloadButton.addActionListener(evt -> {
    
     try {
-        downloadPDF(en.getTitre(),"jhjhjhjh","jjhjjkhjhkjhjk","jhjhjhjhj","jhjhjhjhj");
+       
+    Enchere a= es.getONEEnchere1(Integer.parseInt(enchereid.getText()));
+        downloadPDF(a.getTitre(),a.getDescription(),a.getPrixdepart(),"jhjhjhjhj");
     } catch (Exception ex) {
        
     }
@@ -214,7 +216,7 @@ Participant p = new Participant (montant,client, enchere);
     
     
     
-   private void downloadPDF(String titre,String desc,String nickname,String type,String loc) throws Exception {
+   private void downloadPDF(String titre,String description,double prixdepart,String loc) throws Exception {
     // Set the file path
     String filePath = FileSystemStorage.getInstance().getAppHomePath() + "offre.pdf";
     // Create an output stream to write the PDF file
@@ -227,9 +229,9 @@ Participant p = new Participant (montant,client, enchere);
 
     // Add metadata to the document
     document.addAuthor("Your Name");
-    document.addCreator("Artounsi");
-    document.addSubject("Fichier de demande d'emplois");
-    document.addTitle("Fichier de demande d'emplois");
+    document.addCreator("artflow");
+    document.addSubject("winner");
+    document.addTitle("winner");
 
     // Set the document margins
     document.setMargins(36, 36, 36, 36);
@@ -238,15 +240,26 @@ Participant p = new Participant (montant,client, enchere);
     document.open();
 
     
-Paragraph nickparagraph = new Paragraph("Vou avez postuler a l'offre de la societé : " + nickname,
-        FontFactory.getFont(FontFactory.TIMES_BOLD, 18, Font.NORMAL));
-nickparagraph.setAlignment(Element.ALIGN_CENTER);
+Paragraph nickparagraph = new Paragraph("congradulation you won this auction : " + titre);
+        
+nickparagraph.add("\n"+description);
+nickparagraph.add("Winner\n" +
+"Name: malek\n" +
+"Email: malek@esprit.tn\n" +
+"phone Number: 88222366\n" +
+"Address : hau215\n" +
+"Conditions générales : Paiement à effectuer de préférence par virement bancaire. La facture\n" +
+"doit être payée dans un délai de 30 jours après sa date démission. En cas de retard de\n" +
+"paiement, les pénalités de retard sélèvent à 10% du montant total de la facture. Lindemnité\n" +
+"forfaitaire pour frais de recouvrement est de 200 Dinars. Indemnisation complémentaire sur\n" +
+"justification. Escompte pour paiement anticipé :néant\n" );
+
 
 // Create a new cell to hold the paragraph
 PdfPCell cell = new PdfPCell(nickparagraph);
 
 // Set the background color of the cell
-cell.setBackgroundColor(new BaseColor(153, 50, 204)); // Violet color
+cell.setBackgroundColor(new BaseColor(128, 128, 128)); // Violet color
 
 // Add the cell to a new table with one column and one row
 PdfPTable table = new PdfPTable(1);
